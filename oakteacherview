@@ -20,7 +20,7 @@ def points():
     
     dbutton = Button(p,text="Classroom", padx=60, pady=60, bg="turquoise", fg="white" , font= ('Helvetica 20 bold'), command = dashBoard1 )
     dbutton.place(x=50,y=75)
-    lbutton = Button(p, text="Leaderboard", padx=50, pady=60, bg="Pink", fg="blue", font= ('Helvetica 20 bold'))
+    lbutton = Button(p, text="Leaderboard", padx=50, pady=60, bg="Pink", fg="blue", font= ('Helvetica 20 bold'), command = leaderBoard)
     lbutton.place(x=700,y=75)
     debutton = Button(p, text="Customise", padx=60, pady=60, bg="Blue", fg="white", font= ('Helvetica 20 bold'))
     debutton.place(x=50,y=300)
@@ -45,7 +45,7 @@ def menu():
     
     imagepoints = Image.open("C:\OakCodefest\points.PNG").resize((320,90))
     scalar=1.05
-    imagepoints = imagepoints.resize((int(imagepoints.width*scalar),int(imagepoints.height*scalar))) #keep aspects of image same
+    imagepoints = imagepoints.resize((int(imagepoints.width*scalar),int(imagepoints.height*scalar)))
     imagepoints = ImageTk.PhotoImage(imagepoints)
     buttonp = Button(root, image=imagepoints, command=points)
     buttonp.place(x=40,y=200)
@@ -68,6 +68,26 @@ def menu():
     buttonq.place(x=461,y=400)
 
     root.mainloop()
+
+def leaderBoard():
+    count=0
+    lb = Tk()
+    c.execute("select roll_no, full_name, annual_points from child_point order by annual_points DESC")
+    rowpoint = c.fetchall()
+    rowpoint.insert(0, ("Roll No ", "Name", "Annual Points"))
+    rowstot = len(rowpoint)
+    coltot = len(rowpoint[1])
+    for i in range(rowstot):
+        for j in range(coltot):
+            if count<=2:
+                e = Entry(lb, width = 20, fg = "blue", font = ("Helvetica", 16, 'bold'))
+                count=count+1
+            else:
+                e = Entry(lb, width = 20, font = ("Helvetica", 16))
+            e.grid(row=i, column = j)
+            e.insert(0, rowpoint[i][j])
+            
+        
 
 
 def dashBoard1():
@@ -99,14 +119,10 @@ def dashBoard1():
         end_meeting['state']='normal'
         running=False
         global counter
-        label['text']='Thanks'
-        res = Tk()
-        res.geometry("500x500")
-        label
+        label.place(x=300, y=230)
+        label['text']=("Your meeting was \n" + str(counter-66600) + "seconds long")
         counter=66600
-        #stopwatch
-        
-        
+
         
 
     def awardPoints():
@@ -122,21 +138,18 @@ def dashBoard1():
             c.execute("SELECT part_point from child_point where full_name = (?)", (name,))
             rowpoint = c.fetchone()
             y = rowpoint[0]
-            global rowpoint1
             rowpoint1= y + x
             c.execute("UPDATE child_point set part_point = (?) where full_name = (?)", (rowpoint1, name,))
             
             c.execute("SELECT weekly_points from child_point where full_name = (?)", (name,))
             rowpoint = c.fetchone()
             y = rowpoint[0]
-            global rowpoint1
             rowpoint1 = y + x
             c.execute("UPDATE child_point set weekly_points = (?) where full_name = (?)", (rowpoint1, name,))
             
             c.execute("SELECT annual_points from child_point where full_name = (?)", (name,))
             rowpoint = c.fetchone()
             y = rowpoint[0]
-            global rowpoint1
             rowpoint1 = y + x
             c.execute("UPDATE child_point set annual_points = (?) where full_name = (?)", (rowpoint1, name,))
             conn.commit()
@@ -195,6 +208,8 @@ def dashBoard1():
         
         
 menu()
+
+
 
 
 
