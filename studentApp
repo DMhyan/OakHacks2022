@@ -1,0 +1,42 @@
+import numpy as np
+import cv2
+import datetime
+import time
+import sqlite3
+conn = sqlite3.connect("C:\OakCodefest\points.db")
+c = conn.cursor()
+cap = cv2.VideoCapture(0)
+x=0
+while True:
+    ret, frame = cap.read()
+    cv2.imshow('frame', frame)
+    if cv2.waitKey(1) == ord('q'):
+        c.execute("SELECT cam_point from child_point where roll_no = 1")
+        rowpoint = c.fetchone()
+        y = rowpoint[0]
+        rowpoint1= y + x
+        c.execute("UPDATE child_point set cam_point = (?) where roll_no = 1", (rowpoint1,))
+        
+        c.execute("SELECT weekly_points from child_point where roll_no = 1")
+        rowpoint = c.fetchone()
+        y = rowpoint[0]
+        rowpoint1= y + x
+        c.execute("UPDATE child_point set weekly_points = (?) where roll_no = 1", (rowpoint1,))
+        
+        c.execute("SELECT annual_points from child_point where roll_no = 1")
+        rowpoint = c.fetchone()
+        y = rowpoint[0]
+        rowpoint1 = y + x
+        c.execute("UPDATE child_point set annual_points = (?) where roll_no = 1", (rowpoint1,))
+        conn.commit()
+        break
+    if cap.isOpened():
+        x=x+1
+        time.sleep(1)
+    
+
+    
+
+
+cap.release()
+cv2.destroyAllWindows()
