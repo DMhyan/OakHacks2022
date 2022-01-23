@@ -1,22 +1,121 @@
-import numpy as np
-import cv2
-import datetime
-import time
-import sqlite3
 from tkinter import *
-
+import tkinter.font as font
+import sqlite3
+from PIL import Image, ImageTk
+from datetime import datetime
+import tkinter.font as font
+counter = 66600
+running = False
 conn = sqlite3.connect("C:\OakCodefest\points.db")
 c = conn.cursor()
-def statistics():
-    stats = Tk()
-    "label_annual = Label(stats, text = ("Annual Points -" + " " + rows), font = ("Helvetica", 16, 'bold'))"
-    c.execute("select annual_points, weekly_points, cam_point, part_point from child_point where roll_no = 1")
-    rows = c.fetchall()
-    rows1 = rows[0]
-    for i in rows1:
-        print(i)
+
+def points():
     
+    p = Tk()
+    p.geometry("1010x550")
+    p.title("Points system")
+    label_2 = Label(p, text="Points", font=("Courier", 20, "bold"), fg="turquoise")
+    label_2.place(x=480,y=0)
+   
+    
+    dbutton = Button(p,text="Classroom", padx=60, pady=60, bg="turquoise", fg="white" , font= ('Helvetica 20 bold'), command = dashBoard1 )
+    dbutton.place(x=50,y=75)
+    lbutton = Button(p, text="Leaderboard", padx=50, pady=60, bg="Pink", fg="blue", font= ('Helvetica 20 bold'), command = leaderBoard)
+    lbutton.place(x=700,y=75)
+    debutton = Button(p, text="Customise", padx=60, pady=60, bg="Blue", fg="white", font= ('Helvetica 20 bold'), command = customise)
+    debutton.place(x=50,y=300)
+    pbutton = Button(p, text="Prizes", padx=90, pady=60, bg="gold", fg="black", font= ('Helvetica 20 bold'))
+    pbutton.place(x=700,y=300)
+    ebutton = Button(p, text="Exit", padx=109, pady=60, bg="Red", fg="white", font= ('Helvetica 20 bold'), command=p.destroy)
+    ebutton.place(x=375,y=170)
+    p.mainloop()
+def menu():
+    root = Tk()
+    root.geometry("1000x550")
+    imagebg = Image.open(r'C:\OakCodefest\backgroundscrn.PNG')
+    scalar=1.5
+    imagebg = imagebg.resize((int(imagebg.width*scalar),int(imagebg.height*scalar)))
+    imagebg = ImageTk.PhotoImage(imagebg)
+    background= Label(root, image=imagebg)
+    background.place(x=0,y=0, relwidth=1, relheight=1)
+    
+    root.title("SkoolTool")
+    label_1 = Label(root, text="Welcome to \n SkoolTool", font=("Helvetica", 20, "bold"), fg="turquoise")
+    label_1.place(x=450,y=0)
+    
+    imagepoints = Image.open("C:\OakCodefest\points.PNG").resize((320,90))
+    scalar=1.05
+    imagepoints = imagepoints.resize((int(imagepoints.width*scalar),int(imagepoints.height*scalar)))
+    imagepoints = ImageTk.PhotoImage(imagepoints)
+    buttonp = Button(root, image=imagepoints, command=points)
+    buttonp.place(x=40,y=200)
+
+    imageabout = Image.open('C:\OakCodefest\\aboutUsimage.PNG')
+    scalar=1.2
+    imageabout = imageabout.resize((int(imageabout.width*scalar),int(imageabout.height*scalar)))
+    imageabout = ImageTk.PhotoImage(imageabout)
+    
+    buttona = Button(root, image=imageabout)
+    buttona.place(x=620,y=200)
+
+    imageexit = Image.open('C:\OakCodefest\exitimage.jpeg')
+    scalar=0.1
+    imageexit = imageexit.resize((int(imageexit.width*scalar),int(imageexit.height*scalar)))
+    imageexit = ImageTk.PhotoImage(imageexit)
+    
+    buttonq = Button(root, image=imageexit, command=root.destroy)
+
+    buttonq.place(x=461,y=400)
+
+    root.mainloop()
+
+def customise():
+    def delStudentdb(x):
+        delget = x.get()
+        delget = int(delget)
+        c.execute("delete from child_point where roll_no = (?)", (delget,))
+        conn.commit()
+    def addStudentdb(x,y):
+        name = x.get()
+        email = y.get()       
+        c.execute("insert into child_point VALUES(12, (?), (?), 0, 0, 0, 0, 0, 0)", (name, email,))
+        conn.commit()
+    def delStudent():
+        del1 = Tk()
+        del1.geometry("400x200")
+        del_label = Label(del1, font=("Helvetica", 15), text = "Enter Roll Number")
+        del_label.place(x=120, y=0)
+        enterdel = Entry(del1, font=("Helvetica", 20))
+        enterdel.place(x=50, y=50)
+        delbutton = Button(del1, bg = "red", fg = "white", text = "Confirm", command = lambda: delStudentdb(enterdel), font = ("Helvetica", 15, 'bold'))
+        delbutton.place(x=150, y=120)
         
+        
+    def addStudent():
+        add = Tk()
+        add.geometry("500x500")
+        label_add = Label(add, text = "Enter Student's Name", font = ("Helvetica", 20, 'bold'))
+        e_add = Entry(add, font=("Helvetica", 20))
+        label_email = Label(add, text = "Enter Student's Email", font = ("Helvetica", 20, 'bold'))
+        e_email = Entry(add, font=("Helvetica",20))
+        b_confirm = Button(add, bg = "green", text = "Confirm", font = ("Helvetica", 10, 'bold'), command = lambda: addStudentdb(e_add, e_email))
+        label_add.place(x=100, y=20)
+        e_add.place(x=100, y=120)
+        label_email.place(x=100, y=220)
+        e_email.place(x=100, y=320)
+        b_confirm.place(x=210, y=420)
+                          
+        
+    cus = Tk()
+    cus.geometry("600x400")
+    button_adds = Button(cus, pady=40, padx=40, fg = "white", bg = "green", text = "Add Student", font = ("Helvetica", 20, 'bold'), command = addStudent)
+    button_dels = Button(cus, pady=40, padx=25, fg = "white", bg = "red", text= "Delete Student", font = ("Helvetica", 20, 'bold'), command = delStudent)
+    button_exit = Button(cus, pady=25, padx=25, fg = "white", bg = "Purple", text= "Exit", font = ("Helvetica", 10, 'bold'), command = cus.destroy)
+    cus_label = Label(cus, text = "Customise", font = ("Helvetica", 20, 'bold'), fg = "turquoise")
+    cus_label.place(x=235, y=0)
+    button_dels.place(x=305, y=100)
+    button_adds.place(x=30, y=100)
+    button_exit.place(x=260, y=300)
     
 def leaderBoard():
     def annualLead():
@@ -72,8 +171,6 @@ def leaderBoard():
                 if count<=2:
                     e = Entry(lb_annual, width = 20, fg = "blue", font = ("Helvetica", 16, 'bold'))
                     count=count+1
-                elif count>20:
-                    break
                 else:
                     e = Entry(lb_annual, width = 20, font = ("Helvetica", 16))
                     count=count+1
@@ -115,56 +212,129 @@ def leaderBoard():
     lead_buttonp.place(x=115, y=350)
     lead_exit.place(x=225, y=450)
 
-def camera():
-    c = conn.cursor()
-    cap = cv2.VideoCapture(0)
-    x=0
+            
+        
 
-    while True:
-        ret, frame = cap.read()
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(1) == ord('q'):
-            c.execute("SELECT cam_point from child_point where roll_no = 1")
+
+def dashBoard1():
+    def counter_label(label):
+            def count():
+                    if running:
+                            global counter
+                            if counter==66600:			
+                                    display="Starting..."
+                            else:
+                                    tt = datetime.fromtimestamp(counter)
+                                    string = tt.strftime("%H:%M:%S")
+                                    display=string
+
+                            label['text']=display
+                            label.after(1000, count)
+                            counter += 1
+            count()	
+
+    def Start(label):
+        global running
+        running=True
+        counter_label(label)
+        start['state']='disabled'
+        end_meeting['state']='normal'
+        label.place(x=400,y=225)
+    def stop(label):
+        global running
+        start['state']='normal'
+        end_meeting['state']='normal'
+        running=False
+        global counter
+        label.place(x=350, y=200)
+        label['text']=("Your meeting \n was " + " " + str(counter-66600) + "\nseconds long")
+        counter=66600
+
+        
+
+    def awardPoints():
+        aw = Tk()
+        aw.geometry("500x500")
+        searchlabel = Label(aw, text="Search for students", font=("Helvetica",14))
+
+        searchlabel.place(x=175, y=0)
+        search = Entry(aw, font=("Helvetica", 20))
+        search.place(x=100, y=35)
+        def addPoints(x):
+            name=search.get()
+            c.execute("SELECT part_point from child_point where full_name = (?)", (name,))
             rowpoint = c.fetchone()
             y = rowpoint[0]
             rowpoint1= y + x
-            c.execute("UPDATE child_point set cam_point = (?) where roll_no = 1", (rowpoint1,))
+            c.execute("UPDATE child_point set part_point = (?) where full_name = (?)", (rowpoint1, name,))
             
-            c.execute("SELECT weekly_points from child_point where roll_no = 1")
-            rowpoint = c.fetchone()
-            y = rowpoint[0]
-            rowpoint1= y + x
-            c.execute("UPDATE child_point set weekly_points = (?) where roll_no = 1", (rowpoint1,))
-            
-            c.execute("SELECT annual_points from child_point where roll_no = 1")
+            c.execute("SELECT weekly_points from child_point where full_name = (?)", (name,))
             rowpoint = c.fetchone()
             y = rowpoint[0]
             rowpoint1 = y + x
-            c.execute("UPDATE child_point set annual_points = (?) where roll_no = 1", (rowpoint1,))
+            c.execute("UPDATE child_point set weekly_points = (?) where full_name = (?)", (rowpoint1, name,))
+            
+            c.execute("SELECT annual_points from child_point where full_name = (?)", (name,))
+            rowpoint = c.fetchone()
+            y = rowpoint[0]
+            rowpoint1 = y + x
+            c.execute("UPDATE child_point set annual_points = (?) where full_name = (?)", (rowpoint1, name,))
             conn.commit()
-            break
-        if cap.isOpened():
-            x=x+1
-            time.sleep(1)
+            
+
+
+            
+        stu_list=Listbox(aw, width=50)  
+        stu_list.place(x=100, y=80)
+        button_ten = Button(aw, text="10 points", bg="blue", fg="white", padx=30, pady=15, command=lambda: addPoints(10))
+        button_twenty = Button(aw, text="20 points", bg="green", fg="white", padx=30, pady=15, command=lambda: addPoints(20))
+        button_fifty = Button(aw, text="50 points", bg="purple", fg="white", padx=30, pady=15,command=lambda: addPoints(50))
+        button_custom = Button(aw, text="Custom", bg="turquoise", fg="white")
+        exit_points = Button(aw, text="Exit", bg="Red", fg="white", padx=25, pady=10, command = aw.destroy)
+        button_ten.place(x=40, y=300)
+        button_twenty.place(x=195, y=300)
+        button_fifty.place(x=350, y=300)
+        button_custom.place(x=230, y=370)
+        exit_points.place(x=218, y=425)
+        def fill(x):
+            search.delete(0, END)
+            search.insert(0, stu_list.get(ACTIVE))
+
+            
+        stu_list.bind("<<ListboxSelect>>", fill)
+        c.execute("SELECT full_name from child_point") 
+        rows = c.fetchall()
+        studentslist=()
+        for i in rows:
+            studentslist = studentslist + i
+        list(studentslist)
+        stu_list.delete(0, END)
+        for item in studentslist:
+            stu_list.insert(END, item)
         
-
         
-
-
-    cap.release()
-    cv2.destroyAllWindows()
-
-root = Tk()
-root.geometry("1000x550")
-label1 = Label(root, text="Welcome to \n SkoolTool", fg = "turquoise", font = ("Helvetica", 20))
-label1.place(x=450, y=0)
-button_camera = Button(root, text="Camera", fg = "white", bg = "purple", padx=90, pady=60, font = ("Helvetica", 20, "bold"), command = camera)
-button_camera.place(x=50,y=75)
-lbutton = Button(root, text="Leaderboard", padx=50, pady=60, bg="Pink", fg="blue", font= ('Helvetica 20 bold'), command = leaderBoard)
-lbutton.place(x=700,y=75)
-sbutton = Button(root, text="Statistics", padx=50, pady=60, bg="White", fg="green", font= ('Helvetica 20 bold'), command = statistics)
-sbutton.place(x=410,y=200)
-
+            
+    d1 = Tk()
+    f = Frame(d1)
+    d1.geometry("1000x550")
+    label = Label(d1, text="Welcome!", fg="black", font="Verdana 30 bold")
+    label.place(x=400,y=225)
+    start = Button(d1, text='Start Class', width=6, bg="lime green", fg="white", padx=70, pady=40, font= ('Helvetica 20 bold'), command=lambda:Start(label))
+    end_meeting = Button(d1, text='End Class', width=6, bg="red", fg="white", padx=70, pady=40,  font= ('Helvetica 20 bold'), command=lambda:stop(label))
+    award_points = Button(d1, text="Award Points", width=6, bg="blue", fg="gold", padx=70,  font= ('Helvetica 20 bold'), pady=40, command=awardPoints)
+    exit1 = Button(d1, text="Exit", width=6, bg="orange", fg="purple",  font= ('Helvetica 20 bold'), padx=70, pady=40, command=d1.destroy)
+    
+    
+    f.pack(anchor = 'center',pady=5)
+    start.place(x=400, y=25)
+    end_meeting.place(x=400, y=400)
+    award_points.place(x=700, y=200)
+    exit1.place(x=75, y=200)
+    d1.mainloop()
+        
+        
+        
+menu()
 
 
 
