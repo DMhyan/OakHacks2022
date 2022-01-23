@@ -3,40 +3,194 @@ import cv2
 import datetime
 import time
 import sqlite3
+from tkinter import *
+from PIL import Image, ImageTk
 conn = sqlite3.connect("C:\OakCodefest\points.db")
 c = conn.cursor()
-cap = cv2.VideoCapture(0)
-x=0
-while True:
-    ret, frame = cap.read()
-    cv2.imshow('frame', frame)
-    if cv2.waitKey(1) == ord('q'):
-        c.execute("SELECT cam_point from child_point where roll_no = 1")
-        rowpoint = c.fetchone()
-        y = rowpoint[0]
-        rowpoint1= y + x
-        c.execute("UPDATE child_point set cam_point = (?) where roll_no = 1", (rowpoint1,))
-        
-        c.execute("SELECT weekly_points from child_point where roll_no = 1")
-        rowpoint = c.fetchone()
-        y = rowpoint[0]
-        rowpoint1= y + x
-        c.execute("UPDATE child_point set weekly_points = (?) where roll_no = 1", (rowpoint1,))
-        
-        c.execute("SELECT annual_points from child_point where roll_no = 1")
-        rowpoint = c.fetchone()
-        y = rowpoint[0]
-        rowpoint1 = y + x
-        c.execute("UPDATE child_point set annual_points = (?) where roll_no = 1", (rowpoint1,))
-        conn.commit()
-        break
-    if cap.isOpened():
-        x=x+1
-        time.sleep(1)
+def statistics():
+    c.execute("select annual_points, weekly_points, cam_point, part_point from child_point where roll_no = 1")
+    rows = c.fetchall()
+    rows1 = rows[0]
+    rows2= []
+    for i in rows1:
+        rows2.append(i)
+    stats = Tk()
+    stats.geometry("500x300")
+    label_weekly = Label(stats, text = "Statistics", font = ("Helvetica", 20, 'bold'), fg = "Turquoise").pack()
+    label_clear = Label(stats, text = (" "), font = ("Helvetica", 16, 'bold')).pack()
+    label_annual = Label(stats, text = ("Annual Points -" + " " + str(rows2[0])), font = ("Helvetica", 16, 'bold')).pack()
+    label_weekly = Label(stats, text = ("Weekly Points -" + " " + str(rows2[1])), font = ("Helvetica", 16, 'bold')).pack()
+    label_camera = Label(stats, text = ("Camera Points -" + " " + str(rows2[2])), font = ("Helvetica", 16, 'bold')).pack()
+    label_pp = Label(stats, text = ("Participation Points -" + " " + str(rows2[3])), font = ("Helvetica", 16, 'bold')).pack()
+    label_camerapercent = Label(stats, text = ("Camera Percentage -" + " " + str(rows2[2]/2) + "%"), font = ("Helvetica", 16, 'bold')).pack()
+    label_clear = Label(stats, text = (" "), font = ("Helvetica", 16, 'bold')).pack()
+    label_good = Label(stats, text = "Keep up the good work", font = ("Helvetica", 14, 'bold')).pack()
     
-
+        
     
+def leaderBoard():
+    def annualLead():
+        lb_annual = Tk()
+        count=0
+        c.execute("select roll_no, full_name, annual_points from child_point order by annual_points DESC")
+        rowpoint = c.fetchall()
+        rowpoint.insert(0, ("Roll No ", "Name", "Annual Points"))
+        rowstot = len(rowpoint)
+        coltot = len(rowpoint[1])
+        for i in range(rowstot):
+            for j in range(coltot):
+                if count<=2:
+                    e = Entry(lb_annual, width = 20, fg = "blue", font = ("Helvetica", 16, 'bold'))
+                    count=count+1
+                elif count>20:
+                    break
+                else:
+                    e = Entry(lb_annual, width = 20, font = ("Helvetica", 16))
+                    count=count+1
+                e.grid(row=i, column = j)
+                e.insert(0, rowpoint[i][j])
+    def weeklyLead():
+        lb_annual = Tk()
+        count=0
+        c.execute("select roll_no, full_name, weekly_points from child_point order by weekly_points DESC")
+        rowpoint = c.fetchall()
+        rowpoint.insert(0, ("Roll No ", "Name", "Weekly Points"))
+        rowstot = len(rowpoint)
+        coltot = len(rowpoint[1])
+        for i in range(rowstot):
+            for j in range(coltot):
+                if count<=2:
+                    e = Entry(lb_annual, width = 20, fg = "blue", font = ("Helvetica", 16, 'bold'))
+                    count=count+1
+                elif count>20:
+                    break
+                else:
+                    e = Entry(lb_annual, width = 20, font = ("Helvetica", 16))
+                    count=count+1
+                e.grid(row=i, column = j)
+                e.insert(0, rowpoint[i][j])
+    def camLead():
+        lb_annual = Tk()
+        count=0
+        c.execute("select roll_no, full_name, cam_point from child_point order by cam_point DESC")
+        rowpoint = c.fetchall()
+        rowpoint.insert(0, ("Roll No ", "Name", "Camera Points"))
+        rowstot = len(rowpoint)
+        coltot = len(rowpoint[1])
+        for i in range(rowstot):
+            for j in range(coltot):
+                if count<=2:
+                    e = Entry(lb_annual, width = 20, fg = "blue", font = ("Helvetica", 16, 'bold'))
+                    count=count+1
+                elif count>20:
+                    break
+                else:
+                    e = Entry(lb_annual, width = 20, font = ("Helvetica", 16))
+                    count=count+1
+                e.grid(row=i, column = j)
+                e.insert(0, rowpoint[i][j])
+    def ppLead():
+        lb_annual = Tk()
+        count=0
+        c.execute("select roll_no, full_name, part_point from child_point order by part_point DESC")
+        rowpoint = c.fetchall()
+        rowpoint.insert(0, ("Roll No ", "Name", "Participation Points"))
+        rowstot = len(rowpoint)
+        coltot = len(rowpoint[1])
+        for i in range(rowstot):
+            for j in range(coltot):
+                if count<=2:
+                    e = Entry(lb_annual, width = 20, fg = "blue", font = ("Helvetica", 16, 'bold'))
+                    count=count+1
+                elif count>17:
+                    break
+                else:
+                    e = Entry(lb_annual, width = 20, font = ("Helvetica", 16))
+                    count=count+1
+                e.grid(row=i, column = j)
+                e.insert(0, rowpoint[i][j])
+
+    lead_menu = Tk()
+    lead_menu.geometry("500x500")
+    lead_label = Label(lead_menu, text="Leaderboard", fg = "blue", font = ("Helvetica", 20, 'bold') )
+    lead_buttona = Button(lead_menu, text="Annual Points", fg = "White", bg="Purple",font = ("Helvetica", 20, 'bold'), command = annualLead)
+    lead_buttonw = Button(lead_menu, text="Weekly Points", fg = "White", bg="Turquoise",font = ("Helvetica", 20, 'bold'),command = weeklyLead)
+    lead_buttonc = Button(lead_menu, text="Camera Points", fg = "White", bg="Green",font = ("Helvetica", 20, 'bold'), command = camLead)
+    lead_buttonp = Button(lead_menu, text="Participation Points", fg = "white", bg="pink",font = ("Helvetica", 20, 'bold'), command = ppLead)
+    lead_exit = Button(lead_menu, text="Exit", fg = "White", bg="red", command=lead_menu.destroy, font = ("Helvetica", 14, 'bold'))
+    lead_label.place(x=165, y=0)
+    lead_buttona.place(x=150, y=50)
+    lead_buttonw.place(x=150, y=150)
+    lead_buttonc.place(x=145, y=250)
+    lead_buttonp.place(x=115, y=350)
+    lead_exit.place(x=225, y=450)
+
+def camera():
+    c = conn.cursor()
+    cap = cv2.VideoCapture(0)
+    x=0
+
+    while True:
+        ret, frame = cap.read()
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) == ord('q'):
+            c.execute("SELECT cam_point from child_point where roll_no = 1")
+            rowpoint = c.fetchone()
+            y = rowpoint[0]
+            rowpoint1= y + x
+            c.execute("UPDATE child_point set cam_point = (?) where roll_no = 1", (rowpoint1,))
+            
+            c.execute("SELECT weekly_points from child_point where roll_no = 1")
+            rowpoint = c.fetchone()
+            y = rowpoint[0]
+            rowpoint1= y + x
+            c.execute("UPDATE child_point set weekly_points = (?) where roll_no = 1", (rowpoint1,))
+            
+            c.execute("SELECT annual_points from child_point where roll_no = 1")
+            rowpoint = c.fetchone()
+            y = rowpoint[0]
+            rowpoint1 = y + x
+            c.execute("UPDATE child_point set annual_points = (?) where roll_no = 1", (rowpoint1,))
+            conn.commit()
+            break
+        if cap.isOpened():
+            x=x+1
+            time.sleep(1)
+        
+
+        
 
 
-cap.release()
-cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()
+
+root = Tk()
+root.geometry("1000x550")
+imagebg = Image.open(r"C:\OakCodefest\background1.png")
+scalar=1.5
+imagebg = imagebg.resize((int(imagebg.width*scalar),int(imagebg.height*scalar)))
+imagebg = ImageTk.PhotoImage(imagebg)
+background= Label(root, image=imagebg)
+background.place(x=0,y=0, relwidth=1, relheight=1)
+label1 = Label(root, text="Welcome to \n SkoolTool", fg = "turquoise", font = ("Helvetica", 20 , "bold"))
+label1.place(x=450, y=0)
+button_camera = Button(root, text="Camera", fg = "white", bg = "blue", padx=90, pady=60, font = ("Helvetica", 20, "bold"), command = camera)
+button_camera.place(x=50,y=75)
+lbutton = Button(root, text="Leaderboard", padx=50, pady=60, bg="Pink", fg="blue", font= ('Helvetica 20 bold'), command = leaderBoard)
+lbutton.place(x=700,y=75)
+sbutton = Button(root, text="Statistics", padx=50, pady=60, bg="White", fg="green", font= ('Helvetica 20 bold'), command = statistics)
+sbutton.place(x=410,y=200)
+exitbutton = Button(root, text="Exit", padx=15, pady=20, bg="Red", fg="white", font= ('Helvetica 15 bold'), command = root.destroy)
+exitbutton.place(x=490, y=400)
+
+c.execute("select part_point from child_point where roll_no = 1")
+rowsget = c.fetchone()
+rowsget = (500 - rowsget[0])
+labelprize1 = Label(root, text=("You are " + str(rowsget) + " points away from"), font= ('Helvetica 15 bold'), fg = "turquoise")
+labelprize2 = Label(root, text=("Free Tuck Shop Prize"), font= ('Helvetica 15 bold'), fg = "turquoise")
+labelprize1.place(x=50, y= 400)
+labelprize2.place(x=730, y=400)
+
+
+
+
