@@ -9,8 +9,7 @@ running = False
 conn = sqlite3.connect("C:\OakCodefest\points.db")
 c = conn.cursor()
 
-def points():
-    
+def points():    
     p = Tk()
     p.geometry("1010x550")
     p.title("Points system")
@@ -24,7 +23,7 @@ def points():
     lbutton.place(x=700,y=75)
     debutton = Button(p, text="Customise", padx=60, pady=60, bg="Blue", fg="white", font= ('Helvetica 20 bold'), command = customise)
     debutton.place(x=50,y=300)
-    pbutton = Button(p, text="Prizes", padx=90, pady=60, bg="gold", fg="black", font= ('Helvetica 20 bold'))
+    pbutton = Button(p, text="Prizes", padx=90, pady=60, bg="gold", fg="black", font= ('Helvetica 20 bold'), command = prizes)
     pbutton.place(x=700,y=300)
     ebutton = Button(p, text="Exit", padx=109, pady=60, bg="Red", fg="white", font= ('Helvetica 20 bold'), command=p.destroy)
     ebutton.place(x=375,y=170)
@@ -68,7 +67,17 @@ def menu():
     buttonq.place(x=461,y=400)
 
     root.mainloop()
-
+def prizes():
+    point = Tk()
+    point.geometry("500x300")
+    point_label = Label(point, text="Set Goal", font=("Courier", 20, "bold"), fg="turquoise").pack()
+    label_space = Label(point, text="").pack()
+    entry_prize = Entry(point, font = ("Helvetica", 20)).pack()
+    label_space1 = Label(point, text="").pack()
+    point_label = Label(point, text="Set Prize", font=("Courier", 20, "bold"), fg="turquoise").pack()
+    entry_prize = Entry(point, font = ("Helvetica", 20)).pack()
+    label_space2 = Label(point, text="").pack()
+    button_confirm = Button(point, text="Confirm", bg = "green", fg="white", font=("Courier", 20, "bold"), command = point.destroy).pack()
 def customise():
     def delStudentdb(x):
         delget = x.get()
@@ -171,6 +180,7 @@ def leaderBoard():
                 if count<=2:
                     e = Entry(lb_annual, width = 20, fg = "blue", font = ("Helvetica", 16, 'bold'))
                     count=count+1
+                
                 else:
                     e = Entry(lb_annual, width = 20, font = ("Helvetica", 16))
                     count=count+1
@@ -335,8 +345,6 @@ def dashBoard1():
         
         
 menu()
-
-
 
 
 
